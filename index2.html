@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PawClinic - Caring for Your Furry Friends</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    :root {
+      --primary: #0ea5a4;
+      --secondary: #2563eb;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body class="text-gray-800 bg-slate-50">
+<!-- Header Navigation -->
+<header class="bg-white shadow-md fixed top-0 left-0 w-full z-50">
+<div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+<h1 class="text-xl font-bold text-teal-600">PawClinic</h1>
+<nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+<a class="hover:text-teal-600" href="#home">Home</a>
+<a class="hover:text-teal-600" href="#services">Services</a>
+<a class="hover:text-teal-600" href="#team">Our Team</a>
+<a class="hover:text-teal-600" href="#testimonials">Testimonials</a>
+<a class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700" href="#appointment">Book Appointment</a>
+</nav>
+<button class="md:hidden text-teal-600 text-2xl" id="menu-btn">☰</button>
+</div>
+<div class="md:hidden hidden bg-white border-t" id="mobile-menu">
+<a class="block px-6 py-3 hover:bg-teal-50" href="#home">Home</a>
+<a class="block px-6 py-3 hover:bg-teal-50" href="#services">Services</a>
+<a class="block px-6 py-3 hover:bg-teal-50" href="#team">Our Team</a>
+<a class="block px-6 py-3 hover:bg-teal-50" href="#testimonials">Testimonials</a>
+<a class="block px-6 py-3 text-white bg-teal-600 hover:bg-teal-700" href="#appointment">Book Appointment</a>
+</div>
+</header>
+<div class="pt-24" id="home">
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-teal-500 to-blue-600 text-white py-20 px-6">
+<div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 items-center">
+<div>
+<h1 class="text-4xl md:text-5xl font-bold mb-4">Caring for your furry friends like family</h1>
+<p class="mb-6 text-lg">High-quality, compassionate veterinary care for pets of all kinds. Book appointments, explore our services, and meet our experienced veterinary team.</p>
+<div class="flex gap-4">
+<a class="bg-white text-teal-600 font-semibold px-6 py-3 rounded-lg shadow hover:bg-slate-100" href="#appointment">Book Appointment</a>
+<a class="border border-white text-white font-semibold px-6 py-3 rounded-lg hover:bg-white hover:text-teal-600" href="#services">Our Services</a>
+</div>
+</div>
+<div>
+<video autoplay="" class="rounded-lg shadow-lg w-full h-auto" controls="" loop="" muted="">
+<source src="https://cdn.pixabay.com/vimeo/518497501/dog-63956.mp4?width=1280&amp;hash=9b83dfbe232eb1e9f33c244bfe4728a03a3232e7" type="video/mp4"/>
+            Your browser does not support the video tag.
+          </video>
+</div>
+</div>
+</section>
+<!-- Services Section -->
+<section class="py-16 px-6" id="services">
+<div class="max-w-6xl mx-auto text-center">
+<h2 class="text-3xl font-semibold">Our Veterinary Services</h2>
+<p class="text-gray-600 mt-2 mb-10">Providing everything from preventive health checks to emergency treatments.</p>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+<h3 class="font-semibold text-lg mb-2">Wellness &amp; Preventive Care</h3>
+<p class="text-gray-600 text-sm">Routine exams, vaccinations, and nutrition guidance to keep your pet healthy.</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+<h3 class="font-semibold text-lg mb-2">Surgery &amp; Dental Care</h3>
+<p class="text-gray-600 text-sm">Expert surgical care and dental treatments for your pet’s wellbeing.</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+<h3 class="font-semibold text-lg mb-2">Emergency Services</h3>
+<p class="text-gray-600 text-sm">24/7 emergency response for sudden illnesses or injuries.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Team Section -->
+<section class="bg-slate-100 py-16 px-6" id="team">
+<div class="max-w-6xl mx-auto text-center">
+<h2 class="text-3xl font-semibold">Meet Our Veterinary Team</h2>
+<p class="text-gray-600 mt-2 mb-10">Our compassionate, experienced veterinarians are here to care for your pets.</p>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="bg-white p-6 rounded-xl shadow">
+<img alt="Dr. Smith" class="rounded-full w-32 h-32 mx-auto object-cover mb-4" src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&amp;fit=crop&amp;w=500&amp;q=80"/>
+<h4 class="font-semibold">Dr. Maria Bennett</h4>
+<p class="text-sm text-gray-600">Veterinary Surgeon</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow">
+<img alt="Dr. Alex" class="rounded-full w-32 h-32 mx-auto object-cover mb-4" src="https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&amp;fit=crop&amp;w=500&amp;q=80"/>
+<h4 class="font-semibold">Dr. Alex Morgan</h4>
+<p class="text-sm text-gray-600">Dentistry &amp; Surgery</p>
+</div>
+<div class="bg-white p-6 rounded-xl shadow">
+<img alt="Dr. Asha" class="rounded-full w-32 h-32 mx-auto object-cover mb-4" src="https://images.unsplash.com/photo-1626891561149-3b4e1a8f3c70?auto=format&amp;fit=crop&amp;w=500&amp;q=80"/>
+<h4 class="font-semibold">Dr. Asha Patel</h4>
+<p class="text-sm text-gray-600">Preventive &amp; Behavioral Care</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials -->
+<section class="py-16 px-6" id="testimonials">
+<div class="max-w-5xl mx-auto text-center">
+<h2 class="text-3xl font-semibold">What Pet Parents Say</h2>
+<p class="text-gray-600 mb-10">Hear from our happy clients who trust us with their pets’ care.</p>
+<div class="grid md:grid-cols-2 gap-8">
+<div class="bg-white p-6 rounded-xl shadow">
+<p class="italic text-gray-700">“The vets here are amazing! They treated my cat with so much love and care.”</p>
+<h4 class="mt-3 font-semibold">— Priya Sharma</h4>
+</div>
+<div class="bg-white p-6 rounded-xl shadow">
+<p class="italic text-gray-700">“Quick, kind, and professional! Highly recommend PawClinic.”</p>
+<h4 class="mt-3 font-semibold">— Arjun Mehta</h4>
+</div>
+</div>
+</div>
+</section>
+<!-- Appointment Section -->
+<section class="bg-slate-100 py-16 px-6" id="appointment">
+<div class="max-w-4xl mx-auto">
+<h2 class="text-3xl font-semibold text-center mb-10">Book an Appointment</h2>
+<form class="bg-white p-8 rounded-xl shadow space-y-4" id="appointment-form">
+<div class="grid md:grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-medium">Your Name</label>
+<input class="w-full border rounded-md px-3 py-2 mt-1" id="name" required="" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium">Phone Number</label>
+<input class="w-full border rounded-md px-3 py-2 mt-1" id="phone" required="" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium">Pet's Name</label>
+<input class="w-full border rounded-md px-3 py-2 mt-1" id="pet" required="" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium">Pet Type</label>
+<select class="w-full border rounded-md px-3 py-2 mt-1" id="petType">
+<option>Dog</option>
+<option>Cat</option>
+<option>Bird</option>
+<option>Other</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium">Preferred Date</label>
+<input class="w-full border rounded-md px-3 py-2 mt-1" id="date" type="date"/>
+</div>
+<div>
+<label class="block text-sm font-medium">Preferred Time</label>
+<input class="w-full border rounded-md px-3 py-2 mt-1" id="time" type="time"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium">Additional Notes</label>
+<textarea class="w-full border rounded-md px-3 py-2 mt-1" id="notes" rows="3"></textarea>
+</div>
+<button class="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg" type="submit">Submit</button>
+</form>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-white border-t py-6 text-center text-sm text-gray-600">
+      © 2025 PawClinic — All Rights Reserved.
+    </footer>
+</div>
+<script>
+    // Mobile menu toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Form submission handler
+    document.getElementById('appointment-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const pet = document.getElementById('pet').value.trim();
+      if (!name || !phone || !pet) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+      alert(`Thank you, ${name}! Your appointment request for ${pet} has been received. We'll contact you at ${phone}.`);
+      this.reset();
+    });
+  </script>
+
+<script>
+  const form = document.getElementById('appointment-form');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = {
+        ownerName:  document.getElementById('name').value.trim(),
+        phone:      document.getElementById('phone').value.trim(),
+        petName:    document.getElementById('pet').value.trim(),
+        species:    document.getElementById('petType').value.trim(),
+        service:    'General Checkup',
+        date:       document.getElementById('date').value.trim(),
+        time:       document.getElementById('time').value.trim(),
+        message:    document.getElementById('notes').value.trim(),
+        email:      'noreply@pawsclinic.com',
+        agree:      true
+      };
+      try {
+        const res = await fetch('/api/send-sms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const json = await res.json();
+        if (!res.ok || !json.success) throw new Error(json.error || 'Failed to send');
+        alert('✅ Appointment request sent successfully!');
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        alert('⚠️ Could not send automatically. Please call the clinic instead.');
+      }
+    });
+  }
+</script>
+</body>
+</html>

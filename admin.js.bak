@@ -1,0 +1,247 @@
+/* admin.js — Admin UI with pagination, sort, date filter, modal */
+(function(){
+  // DOM
+  const statusEl = document.getElementById('status');
+  const tbody = document.getElementById('tbody');
+  const qInput = document.getElementById('q');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const csvBtn = document.getElementById('csvBtn');
+  const saveSecretBtn = document.getElementById('saveSecretBtn');
+  const clearSecretBtn = document.getElementById('clearSecretBtn');
+  const adminSecretInput = document.getElementById('adminSecretInput');
+  const dateFrom = document.getElementById('dateFrom');
+  const dateTo = document.getElementById('dateTo');
+  const sortBy = document.getElementById('sortBy');
+  const pageSizeEl = document.getElementById('pageSize');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const pagerInfo = document.getElementById('pagerInfo');
+
+  const modal = document.getElementById('modal');
+  const modalBody = document.getElementById('modalBody');
+  const closeModal = document.getElementById('closeModal');
+
+  // State
+  let appointments = [];
+  let filtered = [];
+  let page = 1;
+  let pageSize = parseInt(pageSizeEl.value || '10', 10);
+  let sortKey = sortBy.value || 'created_desc';
+
+  // Utils
+  const showStatus = (msg, kind='info')=>{
+    statusEl.textContent = msg;
+    statusEl.className = kind === 'error' ? 'text-sm text-red-600 mb-4' : 'text-sm text-gray-600 mb-4';
+  };
+  const escapeHtml = s => String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const truncate = (s,n)=> s.length>n? s.slice(0,n-1)+'…': s;
+
+  // Load saved secret to input
+  function loadSecretToInput(){ adminSecretInput.value = localStorage.getItem('admin_secret') || ''; }
+  loadSecretToInput();
+
+  // Save secret button - test before saving
+  saveSecretBtn.addEventListener('click', async ()=>{
+    const candidate = (adminSecretInput.value||'').trim();
+    if (!candidate) { showStatus('Please enter a secret to test.','error'); return; }
+    showStatus('Testing secret...');
+    try {
+      const res = await fetch('/api/appointments', { headers: { 'X-Admin-Secret': candidate } });
+      const json = await res.json().catch(()=>null);
+      if (!res.ok || !json || !json.success) {
+        const err = json && json.error ? json.error : `Server responded ${res.status}`;
+        showStatus('Secret rejected: '+err, 'error');
+        return;
+      }
+      localStorage.setItem('admin_secret', candidate);
+      showStatus('Secret accepted and saved locally.');
+      loadAll();
+    } catch (e) {
+      console.error(e);
+      showStatus('Network error while testing secret', 'error');
+    }
+  });
+
+  clearSecretBtn.addEventListener('click', ()=>{
+    localStorage.removeItem('admin_secret');
+    adminSecretInput.value = '';
+    showStatus('Cleared secret from localStorage.');
+  });
+
+  // Fetch all appointments from server
+  async function loadAll(){
+    showStatus('Loading appointments from server...');
+    const secret = localStorage.getItem('admin_secret') || '';
+    if (!secret) { showStatus('Enter admin secret and click Save to load appointments.', 'error'); return; }
+    try {
+      const res = await fetch('/api/appointments', { headers: { 'X-Admin-Secret': secret } });
+      const json = await res.json().catch(()=>null);
+      if (!res.ok || !json || !json.success) {
+        const err = json && json.error ? json.error : `Server responded ${res.status}`;
+        showStatus('Error: '+err, 'error');
+        return;
+      }
+      appointments = json.appointments || [];
+      showStatus(`Loaded ${appointments.length} appointment(s).`);
+      applyFiltersAndRender();
+    } catch (e) {
+      console.error(e);
+      showStatus('Network or fetch error: see console', 'error');
+    }
+  }
+
+  // Filtering, sorting, pagination
+  function applyFiltersAndRender(){
+    const q = (qInput.value||'').toLowerCase().trim();
+    const from = dateFrom.value || '';
+    const to = dateTo.value || '';
+
+    filtered = appointments.filter(a=>{
+      // date filter on preferred_date (YYYY-MM-DD) if present
+      if (from && a.preferred_date && a.preferred_date < from) return false;
+      if (to && a.preferred_date && a.preferred_date > to) return false;
+      if (!q) return true;
+      const hay = `${a.owner_name} ${a.phone} ${a.pet_name} ${a.service}`.toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+
+    // sort
+    const [k,dir] = sortKey.split('_');
+    filtered.sort((A,B)=>{
+      let va = (A[k]||'') , vb = (B[k]||'');
+      // prefer ISO date strings -> compare directly; else strings
+      if (k.indexOf('date')!==-1 || k.indexOf('created')!==-1) {
+        // if empty push last
+        if (!va) return 1;
+        if (!vb) return -1;
+        return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+      }
+      // fallback string compare
+      va = String(va).toLowerCase();
+      vb = String(vb).toLowerCase();
+      return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+
+    pageSize = parseInt(pageSizeEl.value||'10',10);
+    if (page < 1) page = 1;
+    const total = filtered.length;
+    const pages = Math.max(1, Math.ceil(total / pageSize));
+    if (page > pages) page = pages;
+
+    // slice for current page
+    const start = (page-1)*pageSize;
+    const pageRows = filtered.slice(start, start + pageSize);
+
+    renderRows(pageRows, start+1);
+    pagerInfo.textContent = `Showing ${Math.min(total, start+1)}–${Math.min(total, start + pageRows.length)} of ${total}`;
+    prevBtn.disabled = page <= 1;
+    nextBtn.disabled = (page >= pages);
+  }
+
+  function renderRows(rows, startIndex){
+    if (!rows || rows.length === 0) {
+      tbody.innerHTML = '<tr><td class="px-4 py-6 text-center text-sm text-gray-500" colspan="10">No appointments found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map((r, i) => {
+      const created = r.created_at || '';
+      const preferred = (r.preferred_date || '') + (r.preferred_time ? ' ' + r.preferred_time : '');
+      const notes = r.notes ? String(r.notes).replace(/\n/g,' ') : '';
+      return `<tr data-idx="${startIndex + i}" data-id="${r.id}" class="hover:bg-slate-50 cursor-pointer">
+        <td class="px-4 py-2 align-top">${startIndex + i}</td>
+        <td class="px-4 py-2 align-top">${escapeHtml(created)}</td>
+        <td class="px-4 py-2 align-top">${escapeHtml(r.owner_name)}</td>
+        <td class="px-4 py-2 align-top">${escapeHtml(r.phone)}</td>
+        <td class="px-4 py-2 align-top">${escapeHtml(r.email||'')}</td>
+        <td class="px-4 py-2 align-top">${escapeHtml(r.pet_name)}</td>
+        <td class="px-4 py-2 align-top">${escapeHtml(r.species)}</td>
+        <td class="px-4 py-2 align-top">${escapeHtml(r.service)}</td>
+        <td class="px-4 py-2 align-top">${escapeHtml(preferred)}</td>
+        <td class="px-4 py-2 align-top">${escapeHtml(truncate(notes,80))}</td>
+      </tr>`;
+    }).join('');
+
+    // attach row click handlers for details modal
+    Array.from(tbody.querySelectorAll('tr[data-id]')).forEach(tr=>{
+      tr.addEventListener('click', ()=>{
+        const id = tr.getAttribute('data-id');
+        const idx = parseInt(tr.getAttribute('data-idx'),10) - 1;
+        const record = filtered[idx] || appointments.find(a=>String(a.id)===String(id));
+        openModal(record);
+      });
+    });
+  }
+
+  // Modal
+  function openModal(record){
+    if (!record) return;
+    modalBody.innerHTML = `
+      <div class="grid grid-cols-2 gap-3">
+        <div><strong>Owner</strong><div>${escapeHtml(record.owner_name)}</div></div>
+        <div><strong>Phone</strong><div>${escapeHtml(record.phone)}</div></div>
+        <div><strong>Email</strong><div>${escapeHtml(record.email||'')}</div></div>
+        <div><strong>Pet</strong><div>${escapeHtml(record.pet_name)} (${escapeHtml(record.species)})</div></div>
+        <div><strong>Service</strong><div>${escapeHtml(record.service)}</div></div>
+        <div><strong>Preferred</strong><div>${escapeHtml(record.preferred_date||'')} ${escapeHtml(record.preferred_time||'')}</div></div>
+      </div>
+      <div class="mt-4"><strong>Notes</strong><div class="whitespace-pre-wrap text-sm text-gray-700 mt-1">${escapeHtml(record.notes||'')}</div></div>
+      <div class="mt-4 text-sm text-gray-500">Created: ${escapeHtml(record.created_at||'')}</div>
+    `;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+  }
+  closeModal.addEventListener('click', ()=>{ modal.classList.remove('flex'); modal.classList.add('hidden'); });
+  modal.addEventListener('click', (e)=>{ if (e.target === modal) { modal.classList.remove('flex'); modal.classList.add('hidden'); } });
+
+  // Controls
+  qInput.addEventListener('input', ()=>{ page = 1; applyFiltersAndRender(); });
+  dateFrom.addEventListener('change', ()=>{ page = 1; applyFiltersAndRender(); });
+  dateTo.addEventListener('change', ()=>{ page = 1; applyFiltersAndRender(); });
+  sortBy.addEventListener('change', ()=>{ sortKey = sortBy.value; applyFiltersAndRender(); });
+  pageSizeEl.addEventListener('change', ()=>{ pageSize = parseInt(pageSizeEl.value||'10',10); page = 1; applyFiltersAndRender(); });
+  prevBtn.addEventListener('click', ()=>{ if (page>1) { page--; applyFiltersAndRender(); } });
+  nextBtn.addEventListener('click', ()=>{ page++; applyFiltersAndRender(); });
+
+  // clicking headers to sort
+  Array.from(document.querySelectorAll('.sort-col')).forEach(h=>{
+    h.addEventListener('click', ()=>{
+      const col = h.getAttribute('data-col');
+      // toggle between asc/desc for that column
+      const current = sortKey.split('_')[0];
+      const dir = (current === col && sortKey.endsWith('_asc')) ? 'desc' : 'asc';
+      sortKey = `${col}_${dir}`;
+      sortBy.value = sortKey;
+      applyFiltersAndRender();
+    });
+  });
+
+  // CSV export
+  csvBtn.addEventListener('click', ()=>{
+    const rows = filtered;
+    const header = ['id','created_at','owner_name','phone','email','pet_name','species','service','preferred_date','preferred_time','notes'];
+    const lines = [header.join(',')];
+    for (const r of rows) {
+      const line = header.map(h => `"${String(r[h]||'').replace(/"/g,'""')}"`).join(',');
+      lines.push(line);
+    }
+    const blob = new Blob([lines.join('\n')], { type:'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `appointments-${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  // initial load (if secret exists)
+  (function init(){
+    loadAll();
+  })();
+
+  // expose some functions for testing
+  window._admin_reload = loadAll;
+  window._admin_state = ()=>({appointments, filtered, page, pageSize, sortKey});
+
+})();

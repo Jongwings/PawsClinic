@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PawsClinic — Book Appointment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <header class="bg-white border-b sticky top-0 z-10">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="font-extrabold text-teal-600 text-xl">PawsClinic</a>
+      <nav class="text-sm">
+        <a href="#appointment" class="px-3 py-2 rounded-md bg-teal-600 text-white">Book Appointment</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-10">
+    <section class="mb-10">
+      <h1 class="text-3xl font-bold mb-2">Caring for your furry friends like family</h1>
+      <p class="text-slate-600">Fill the form below — our server will send an SMS to the clinic automatically.</p>
+    </section>
+
+    <section id="appointment" class="bg-white border rounded-2xl shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Book an Appointment</h2>
+      <form id="apptForm" class="grid gap-4" novalidate>
+        <div class="grid md:grid-cols-2 gap-4">
+          <label class="grid gap-1">
+            <span class="text-sm font-medium">Your Name</span>
+            <input id="ownerName" name="ownerName" required class="rounded-lg border px-3 py-2" placeholder="Jane Doe">
+            <small class="text-red-600 text-xs"></small>
+          </label>
+          <label class="grid gap-1">
+            <span class="text-sm font-medium">Email</span>
+            <input id="email" name="email" type="email" required class="rounded-lg border px-3 py-2" placeholder="jane@example.com">
+            <small class="text-red-600 text-xs"></small>
+          </label>
+          <label class="grid gap-1">
+            <span class="text-sm font-medium">Your Phone</span>
+            <input id="phone" name="phone" type="tel" required class="rounded-lg border px-3 py-2" placeholder="+91 98765 43210">
+            <small class="text-red-600 text-xs"></small>
+          </label>
+          <label class="grid gap-1">
+            <span class="text-sm font-medium">Pet Name</span>
+            <input id="petName" name="petName" required class="rounded-lg border px-3 py-2" placeholder="Max">
+            <small class="text-red-600 text-xs"></small>
+          </label>
+          <label class="grid gap-1">
+            <span class="text-sm font-medium">Species</span>
+            <select id="species" name="species" required class="rounded-lg border px-3 py-2">
+              <option value="">Choose…</option>
+              <option>Dog</option>
+              <option>Cat</option>
+              <option>Rabbit</option>
+              <option>Other</option>
+            </select>
+            <small class="text-red-600 text-xs"></small>
+          </label>
+          <label class="grid gap-1">
+            <span class="text-sm font-medium">Service</span>
+            <select id="service" name="service" required class="rounded-lg border px-3 py-2">
+              <option value="">Choose…</option>
+              <option>Wellness Checkup</option>
+              <option>Surgery</option>
+              <option>Diagnostics</option>
+              <option>Dental Care</option>
+              <option>Emergency</option>
+              <option>Grooming & Boarding</option>
+            </select>
+            <small class="text-red-600 text-xs"></small>
+          </label>
+          <label class="grid gap-1">
+            <span class="text-sm font-medium">Preferred Date</span>
+            <input id="date" name="date" type="date" required class="rounded-lg border px-3 py-2">
+            <small class="text-red-600 text-xs"></small>
+          </label>
+          <label class="grid gap-1">
+            <span class="text-sm font-medium">Preferred Time</span>
+            <input id="time" name="time" type="time" required class="rounded-lg border px-3 py-2">
+            <small class="text-red-600 text-xs"></small>
+          </label>
+        </div>
+        <label class="grid gap-1">
+          <span class="text-sm font-medium">Notes</span>
+          <textarea id="message" name="message" rows="3" class="rounded-lg border px-3 py-2" placeholder="Symptoms, concerns, or goals."></textarea>
+        </label>
+        <label class="inline-flex items-center gap-2 text-sm">
+          <input id="agree" type="checkbox" class="rounded border" required>
+          <span>I agree to the terms & privacy policy.</span>
+          <small class="text-red-600 text-xs"></small>
+        </label>
+        <button class="justify-self-start bg-teal-600 hover:bg-teal-700 text-white font-semibold px-5 py-2 rounded-lg" type="submit">Submit</button>
+        <p id="formStatus" class="text-sm min-h-[1.25rem]" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

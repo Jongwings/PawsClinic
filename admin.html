@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>PawClinic — Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <!-- Login Screen -->
+  <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-slate-100">
+    <div class="bg-white rounded-xl shadow-lg p-8 w-96">
+      <h2 class="text-xl font-semibold text-center mb-4">Admin Login</h2>
+      <p class="text-sm text-gray-500 text-center mb-6">
+        Enter the admin secret to access appointment data.
+      </p>
+      <input id="login-secret" type="password"
+        placeholder="Admin secret"
+        class="w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500">
+      <button id="login-btn"
+        class="w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition">
+        Login
+      </button>
+      <p id="login-error" class="text-red-600 text-sm mt-3 text-center hidden"></p>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="admin-panel" class="hidden max-w-6xl mx-auto p-6">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-semibold">Appointments — Admin</h1>
+        <p class="text-sm text-gray-500">Manage, filter, and export all appointments.</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="logout-btn"
+          class="bg-slate-200 text-slate-800 px-3 py-2 rounded-lg hover:bg-slate-300">Logout</button>
+      </div>
+    </div>
+
+    <!-- Filters + Controls -->
+    <div class="bg-white p-4 rounded-lg shadow mb-6">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="flex items-center gap-2">
+          <input id="q" class="px-3 py-2 border rounded-lg w-full"
+                 placeholder="Search name / phone / pet / service"/>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-gray-600">Date from</label>
+          <input id="dateFrom" type="date" class="px-3 py-2 border rounded-lg"/>
+          <label class="text-sm text-gray-600">to</label>
+          <input id="dateTo" type="date" class="px-3 py-2 border rounded-lg"/>
+        </div>
+        <div class="flex items-center gap-2 justify-end">
+          <select id="sortBy" class="px-3 py-2 border rounded-lg">
+            <option value="created_desc">Created (newest)</option>
+            <option value="created_asc">Created (oldest)</option>
+            <option value="owner_asc">Owner A→Z</option>
+            <option value="owner_desc">Owner Z→A</option>
+          </select>
+          <button id="refreshBtn"
+            class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700">Refresh</button>
+          <button id="csvBtn"
+            class="bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-slate-800">Download CSV</button>
+            <button id="downloadDbBtn"
+            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+            Download DB
+          </button>
+            
+        </div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div id="status" class="text-sm text-gray-600 mb-4">Idle.</div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto bg-white rounded-lg shadow">
+      <table id="tbl" class="min-w-full text-sm">
+        <thead class="bg-slate-100 text-left">
+          <tr>
+            <th class="px-4 py-2">#</th>
+            <th class="px-4 py-2">Created</th>
+            <th class="px-4 py-2">Owner</th>
+            <th class="px-4 py-2">Phone</th>
+            <th class="px-4 py-2">Pet</th>
+            <th class="px-4 py-2">Service</th>
+            <th class="px-4 py-2">Preferred</th>
+            <th class="px-4 py-2">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="tbody" class="divide-y"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>
