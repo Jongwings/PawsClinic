@@ -1,0 +1,7 @@
+node_modules
+server/appointments.db
+server/data
+.env
+.DS_Store
+.vscode
+npm-debug.log

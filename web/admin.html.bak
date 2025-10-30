@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PawClinic — Appointments (Admin)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <div class="max-w-6xl mx-auto p-6">
+    <div class="flex items-start justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-2xl font-semibold">Appointments — Admin</h1>
+        <p class="text-sm text-gray-500">Manage bookings, filter, sort and export.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <input id="adminSecretInput" placeholder="Admin secret" class="px-3 py-2 border rounded-lg w-56" />
+        <button id="saveSecretBtn" class="bg-teal-600 text-white px-3 py-2 rounded-lg">Save</button>
+        <button id="clearSecretBtn" class="bg-slate-200 text-slate-800 px-3 py-2 rounded-lg">Clear</button>
+      </div>
+    </div>
+
+    <div class="bg-white p-4 rounded-lg shadow mb-6">
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="flex items-center gap-2">
+          <input id="q" class="px-3 py-2 border rounded-lg w-full" placeholder="Search name / phone / pet / service" />
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-gray-600">Date from</label>
+          <input id="dateFrom" type="date" class="px-3 py-2 border rounded-lg" />
+          <label class="text-sm text-gray-600">to</label>
+          <input id="dateTo" type="date" class="px-3 py-2 border rounded-lg" />
+        </div>
+
+        <div class="flex items-center gap-2 justify-end">
+          <select id="sortBy" class="px-3 py-2 border rounded-lg">
+            <option value="created_desc">Created (newest)</option>
+            <option value="created_asc">Created (oldest)</option>
+            <option value="owner_asc">Owner A→Z</option>
+            <option value="owner_desc">Owner Z→A</option>
+            <option value="date_asc">Preferred date ↑</option>
+            <option value="date_desc">Preferred date ↓</option>
+          </select>
+
+          <select id="pageSize" class="px-3 py-2 border rounded-lg">
+            <option>10</option>
+            <option>25</option>
+            <option>50</option>
+          </select>
+
+          <button id="refreshBtn" class="bg-teal-600 text-white px-4 py-2 rounded-lg">Refresh</button>
+          <button id="csvBtn" class="bg-slate-700 text-white px-4 py-2 rounded-lg">Download CSV</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="status" class="text-sm text-gray-600 mb-4">Idle.</div>
+
+    <div class="overflow-x-auto bg-white rounded-lg shadow">
+      <table id="tbl" class="min-w-full text-sm">
+        <thead class="bg-slate-100 text-left">
+          <tr>
+            <th class="px-4 py-2 w-12">#</th>
+            <th class="px-4 py-2 cursor-pointer sort-col" data-col="created_at">Created</th>
+            <th class="px-4 py-2 cursor-pointer sort-col" data-col="owner_name">Owner</th>
+            <th class="px-4 py-2">Phone</th>
+            <th class="px-4 py-2">Email</th>
+            <th class="px-4 py-2">Pet</th>
+            <th class="px-4 py-2">Species</th>
+            <th class="px-4 py-2">Service</th>
+            <th class="px-4 py-2 cursor-pointer sort-col" data-col="preferred_date">Preferred</th>
+            <th class="px-4 py-2">Notes</th>
+          </tr>
+        </thead>
+        <tbody id="tbody" class="divide-y"></tbody>
+      </table>
+    </div>
+
+    <div class="flex items-center justify-between mt-4">
+      <div class="text-sm text-gray-600" id="pagerInfo">Showing 0 of 0</div>
+      <div class="flex items-center gap-2">
+        <button id="prevBtn" class="px-3 py-2 border rounded disabled:opacity-50">Prev</button>
+        <button id="nextBtn" class="px-3 py-2 border rounded disabled:opacity-50">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40">
+    <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold">Appointment details</h3>
+        <button id="closeModal" class="text-gray-500">✕</button>
+      </div>
+      <div id="modalBody" class="space-y-2 text-sm text-gray-800"></div>
+    </div>
+  </div>
+
+  <script src="/admin.js"></script>
+</body>
+</html>
