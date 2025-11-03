@@ -1,23 +1,25 @@
 name: Deploy web/ to GitHub Pages
 
-# Run on push to main (adjust branch name if you use something else)
 on:
   push:
     branches:
       - main
 
+# Grant GITHUB_TOKEN rights so the workflow can push to gh-pages
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # checkout the repository (full history so Pages can serve correctly)
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # If you had a build step (e.g. npm run build), add it here.
-      # This project uses static files in `web/` so there's no build step needed.
-      # Example build step (uncomment if you need it):
+      # If you need a build step, uncomment and adjust these lines:
       # - name: Setup Node.js
       #   uses: actions/setup-node@v4
       #   with:
@@ -27,11 +29,9 @@ jobs:
       #     npm install
       #     npm run build
 
-      # Deploy the contents of ./web to gh-pages branch
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           publish_dir: ./web
           publish_branch: gh-pages
-          # this token is provided automatically by GitHub Actions
           github_token: ${{ secrets.GITHUB_TOKEN }}
