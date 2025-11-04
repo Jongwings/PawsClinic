@@ -120,18 +120,16 @@ if (form) {
     };
 
     try {
-      // Use window.API_BASE if provided (set in index.html); otherwise default to same-origin '/api'
-const API_BASE = (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE.replace(/\/$/, '') : '';
 
-// Build full URL
-const url = (API_BASE ? API_BASE : '') + '/api/send-sms';
+      const API_BASE = (typeof window !== 'undefined' && window.API_BASE) ? window.API_BASE.replace(/\/$/, '') : '';
+      const url = (API_BASE ? API_BASE : '') + '/api/send-sms';
 
-const res = await fetch(url, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(payload)
-});
-
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
       const json = await res.json();
       if (!res.ok || !json.success) throw new Error(json.error || 'Failed to send');
       showToast('Appointment request sent — we will contact you shortly.', 'success');
