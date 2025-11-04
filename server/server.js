@@ -283,8 +283,21 @@ app.get('/api/download-db', async (req, res) => {
 
 
 // Serve static website
-app.use(express.static(path.join(__dirname, '../web')));
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../web/index.html')));
+// ===== Serve API only on Render / Production =====
+// If you want the server to be API-only in production (Pages hosts the frontend),
+// redirect root / to the Pages site (set PAGES_URL in env).
+const PAGES_URL = process.env.PAGES_URL || 'https://www.jongwings.com/PawsClinic/';
+
+// In development (local) we may still want to serve the static web folder.
+// Use NODE_ENV=development to enable local static hosting.
+if (process.env.NODE_ENV === 'development') {
+  app.use(express.static(path.join(__dirname, '../web')));
+  app.get('/', (req, res) => res.sendFile(path.join(__dirname, '../web/index.html')));
+} else {
+  // Production / Render: redirect the root to the Pages site (no static files served)
+  app.get('/', (req, res) => res.redirect(302, PAGES_URL));
+}
+
 
 // ---------------- Startup ----------------
 (async function startServer() {
