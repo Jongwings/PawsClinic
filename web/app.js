@@ -1,3 +1,28 @@
+// web/app.js
+const API = (window.API_BASE || 'https://pawsclinic-server.onrender.com').replace(/\/$/, '');
+
+async function postAppointment(data) {
+  const url = `${API}/api/send-sms`;
+  console.log('POST', url, data); // helps you verify in DevTools
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  let json = {};
+  try { json = await res.json(); } catch {}
+  if (!res.ok || !json.success) {
+    throw new Error(json.error || `Request failed with ${res.status}`);
+  }
+  return json;
+}
+
+
+
+
+
 // web/app.js — minimal form handler + admin helpers
 const API_BASE = (window.API_BASE || '').replace(/\/$/, '');
 const API_URL = (API_BASE ? API_BASE : '') + '/api/send-sms';

@@ -1,7 +1,8 @@
 // web/admin.js — unified admin client for GitHub Pages + Render API
 
 // ---- API base (from admin.html) ----
-const API = (window.API_BASE || '').replace(/\/$/, '');
+const API = (window.API_BASE || 'https://pawsclinic-server.onrender.com').replace(/\/$/,'');
+
 
 // ---- Element helpers (support both UIs) ----
 const $ = (id) => document.getElementById(id);
