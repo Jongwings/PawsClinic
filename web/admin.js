@@ -153,3 +153,138 @@ if (downloadDbBtn) {
     }
   }
 })();
+
+// web/admin.js
+const API = (window.API_BASE || '').replace(/\/$/, '');
+
+const els = {
+  status: document.getElementById('status'),
+  rows: document.getElementById('rows'),
+  search: document.getElementById('search'),
+  refresh: document.getElementById('refresh'),
+  download: document.getElementById('download'),
+  login: document.getElementById('admin-login-form'),
+  secretInput: document.getElementById('admin-secret'),
+  clearSecret: document.getElementById('clear-secret'),
+  secretStatus: document.getElementById('secret-status'),
+};
+
+let ALL = [];
+
+function getSecret() {
+  return localStorage.getItem('admin_secret') || '';
+}
+
+function setSecret(v) {
+  localStorage.setItem('admin_secret', v);
+  updateSecretStatus();
+}
+
+function clearSecret() {
+  localStorage.removeItem('admin_secret');
+  updateSecretStatus();
+}
+
+function updateSecretStatus() {
+  const s = getSecret();
+  els.secretStatus.textContent = s ? 'Secret saved' : 'No secret saved';
+}
+
+async function fetchAppointments() {
+  const secret = getSecret();
+  if (!secret) {
+    els.status.textContent = 'No secret — enter it above and click Save.';
+    return;
+  }
+  els.status.textContent = 'Loading…';
+
+  try {
+    const res = await fetch(`${API}/api/appointments`, {
+      headers: { 'X-Admin-Secret': secret }
+    });
+    const j = await res.json();
+    if (!res.ok || !j.success) throw new Error(j.error || 'Failed to fetch');
+
+    ALL = (j.appointments || []);
+    els.status.textContent = `Loaded ${ALL.length} rows.`;
+    render(ALL);
+  } catch (e) {
+    console.error(e);
+    els.status.textContent = `Error: ${e.message}`;
+  }
+}
+
+function render(data) {
+  const q = (els.search.value || '').toLowerCase();
+  const filtered = !q ? data : data.filter(r => {
+    const hay =
+      `${r.owner_name} ${r.phone} ${r.email||''} ${r.pet_name} ${r.species} ${r.service} ${r.notes||''}`
+      .toLowerCase();
+    return hay.includes(q);
+  });
+
+  els.rows.innerHTML = filtered.map((r, i) => `
+    <tr class="${i%2 ? 'bg-white' : 'bg-slate-50'}">
+      <td class="p-2">${i+1}</td>
+      <td class="p-2">${r.created_at || ''}</td>
+      <td class="p-2">${r.owner_name}</td>
+      <td class="p-2">${r.phone}</td>
+      <td class="p-2">${r.email || ''}</td>
+      <td class="p-2">${r.pet_name}</td>
+      <td class="p-2">${r.species}</td>
+      <td class="p-2">${r.service}</td>
+      <td class="p-2">${(r.preferred_date||'') + (r.preferred_time?(' '+r.preferred_time):'')}</td>
+      <td class="p-2">${r.notes || ''}</td>
+    </tr>
+  `).join('');
+}
+
+function toCSV(rows) {
+  const header = ['id','created_at','owner_name','phone','email','pet_name','species','service','preferred_date','preferred_time','notes'];
+  const esc = s => `"${String(s??'').replace(/"/g,'""')}"`;
+  const body = rows.map(r => header.map(k => esc(r[k])).join(','));
+  return [header.join(','), ...body].join('\n');
+}
+
+function downloadCSV() {
+  const csv = toCSV(ALL);
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'appointments.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function init() {
+  updateSecretStatus();
+
+  els.login.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const v = (els.secretInput.value || '').trim();
+    if (v) {
+      setSecret(v);
+      els.secretInput.value = '';
+      fetchAppointments();
+    }
+  });
+
+  els.clearSecret.addEventListener('click', () => {
+    clearSecret();
+    els.rows.innerHTML = '';
+    els.status.textContent = 'Secret cleared.';
+  });
+
+  els.refresh.addEventListener('click', fetchAppointments);
+  els.download.addEventListener('click', downloadCSV);
+  els.search.addEventListener('input', () => render(ALL));
+
+  // Auto-load if a secret already exists
+  if (getSecret()) fetchAppointments();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
